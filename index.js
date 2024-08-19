@@ -18,6 +18,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
 async function run() {
   try {
     const productCollection = client.db("sadhinmart").collection("products");
@@ -30,8 +31,8 @@ async function run() {
         query = { productName: { $regex: search, $options: "i" } };
       }
       
-      const result = await productCollection.find(query).toArray();
-      res.send(result);
+      const products = await productCollection.find(query).toArray();
+      res.send({ success: true, data: products }); // Ensure the response is wrapped in an object
     });
 
     await client.connect();
@@ -40,6 +41,7 @@ async function run() {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
+    // Keep the connection open
   }
 }
 run().catch(console.dir);
@@ -49,5 +51,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Sadhin Mart Server Listening ${port}`);
+  console.log(`Sadhin Mart Server Listening on port ${port}`);
 });
