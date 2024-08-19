@@ -35,8 +35,8 @@ async function run() {
       res.send({ success: true, data: products }); // Ensure the response is wrapped in an object
     });
 
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
+    // await client.connect();
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
