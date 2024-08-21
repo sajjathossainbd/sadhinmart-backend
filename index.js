@@ -30,9 +30,18 @@ async function run() {
       if (search) {
         query = { productName: { $regex: search, $options: "i" } };
       }
-      
-      const products = await productCollection.find(query).toArray();
-      res.send({ success: true, data: products }); // Ensure the response is wrapped in an object
+
+      if (sort === "low-to-high") {
+        sortQuery = { price: 1 }; // Sort by price ascending
+      } else if (sort === "high-to-low") {
+        sortQuery = { price: -1 }; // Sort by price descending
+      }
+
+      const products = await productCollection
+        .find(query)
+        .sort(sortQuery)
+        .toArray();
+      res.send({ success: true, data: products });
     });
 
     // await client.connect();
