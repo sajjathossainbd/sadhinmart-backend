@@ -53,7 +53,16 @@ async function run() {
         .skip(skip)
         .limit(limit);
 
-      res.send({ success: true, data: products });
+      res.send({
+        success: true,
+        data: products,
+        pagination: {
+          totalProducts,
+          totalPages: Math.ceil(totalProducts / limit),
+          currentPage: page,
+          limit,
+        },
+      });
     });
 
     console.log(
