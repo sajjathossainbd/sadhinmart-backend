@@ -27,7 +27,7 @@ async function run() {
     app.get("/products", async (req, res) => {
       const search = req.query.productName;
       const sort = req.query.sort; // Retrieve the sort query parameter
-      const page = parseInt(req.query.page) || 1; 
+      const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
 
       let query = {};
@@ -43,13 +43,15 @@ async function run() {
         sortQuery = { price: -1 }; // Sort by price descending
       }
 
-      const skip = (page - 1)
+      const skip = page - 1;
       const totalPages = Math.ceil(totalItems / limit);
 
       const products = await productCollection
         .find(query)
         .sort(sortQuery)
-        .toArray();
+        .toArray()
+        .skip(skip)
+        .limit(limit);
 
       res.send({ success: true, data: products });
     });
