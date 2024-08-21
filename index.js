@@ -5,7 +5,7 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -23,36 +23,42 @@ async function run() {
   try {
     const productCollection = client.db("sadhinmart").collection("products");
 
-    // PRODUCT API
+    // PRODUCT API with Pagination
     app.get("/products", async (req, res) => {
-      const search = req.query.productName;
-      const sort = req.query.sort; // Retrieve the sort query parameter
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.productName || "";
+      const sort = req.query.sort || ""; // Sorting order (low-to-high or high-to-low)
+      const page = parseInt(req.query.page) || 1; // Current page number (default 1)
+      const limit = parseInt(req.query.limit) || 10; // Items per page (default 10)
 
+      // Build the query
       let query = {};
-      let sortQuery = {};
-
       if (search) {
         query = { productName: { $regex: search, $options: "i" } };
       }
 
+      // Build the sort query
+      let sortQuery = {};
       if (sort === "low-to-high") {
         sortQuery = { price: 1 }; // Sort by price ascending
       } else if (sort === "high-to-low") {
         sortQuery = { price: -1 }; // Sort by price descending
       }
 
-      const skip = page - 1;
-      const totalPages = Math.ceil(totalItems / limit);
+      // Calculate the total number of documents
+      const totalProducts = await productCollection.countDocuments(query);
 
+      // Calculate the number of documents to skip
+      const skip = (page - 1) * limit;
+
+      // Fetch the products with pagination and sorting
       const products = await productCollection
         .find(query)
         .sort(sortQuery)
-        .toArray()
         .skip(skip)
-        .limit(limit);
+        .limit(limit)
+        .toArray();
 
+      // Return the response with pagination info
       res.send({
         success: true,
         data: products,
@@ -65,9 +71,9 @@ async function run() {
       });
     });
 
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.connect();
+    // await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Keep the connection open
   }
