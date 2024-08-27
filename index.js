@@ -75,7 +75,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Sadhin Mart Server Is Running");
+  res.send("Welcome to Sadhin Mart Server Running");
 });
 
 app.listen(port, () => {
