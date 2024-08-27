@@ -27,8 +27,8 @@ async function run() {
     app.get("/products", async (req, res) => {
       const search = req.query.productName || "";
       const sort = req.query.sort || ""; // Sorting order (low-to-high or high-to-low)
-      const page = parseInt(req.query.page) || 1; // Current page number (default 1)
-      const limit = parseInt(req.query.limit) || 10; // Items per page (default 10)
+      // const page = parseInt(req.query.page) || 1; // Current page number (default 1)
+      // const limit = parseInt(req.query.limit) || 10; // Items per page (default 10)
 
       // Build the query
       let query = {};
@@ -48,26 +48,20 @@ async function run() {
       const totalProducts = await productCollection.countDocuments(query);
 
       // Calculate the number of documents to skip
-      const skip = (page - 1) * limit;
+      // const skip = (page - 1) * limit;
 
       // Fetch the products with pagination and sorting
       const products = await productCollection
         .find(query)
         .sort(sortQuery)
-        .skip(skip)
-        .limit(limit)
+        // .skip(skip)
+        // .limit(limit)
         .toArray();
 
       // Return the response with pagination info
       res.send({
         success: true,
         data: products,
-        pagination: {
-          totalProducts,
-          totalPages: Math.ceil(totalProducts / limit),
-          currentPage: page,
-          limit,
-        },
       });
     });
 
